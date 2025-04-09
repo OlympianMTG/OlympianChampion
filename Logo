@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olympian Mortgage Candidate Assessment</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 10px; }
+        h1 { text-align: center; }
+        .question { margin-bottom: 20px; }
+        .question p { font-weight: bold; }
+        .result { display: none; text-align: center; margin-top: 20px; }
+        button { padding: 10px 20px; background-color: #007BFF; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .logo { display: block; margin: 0 auto 20px; max-width: 200px; height: auto; }
+    </style>
+</head>
+<body>
+    <img src="olympian-mortgage-logo.png" alt="olympian-mortgage-logo.png" class="logo">
+    <!-- For GitHub Pages, uncomment and adjust repo name if needed -->
+    <!-- <img src="/mortgage-assessment/olympian-mortgage-logo.png" alt="Olympian Mortgage Logo" class="logo"> -->
+    
+    <h1>Olympian Mortgage Candidate Assessment</h1>
+    <p>Welcome! For each question, choose the option (A, B, C, or D) that best reflects your approach. No mortgage experience? That’s fine—just pick what feels natural to you.</p>
+    <form id="assessmentForm">
+        <div id="questions"></div>
+        <button type="button" onclick="submitForm()">Submit</button>
+    </form>
+    <div id="result" class="result"></div>
+
+    <script>
+        const questions = [
+            { q: "A client doesn’t respond after our first conversation. How do you follow up?", a: "Visit them in person to build a connection.", b: "Call repeatedly until they answer.", c: "Send a polite text and focus on other prospects.", d: "Move on—there are other opportunities." },
+            { q: "You’re halfway to your monthly target with a week left. How do you finish strong?", a: "Ramp up efforts to exceed it and set a new standard.", b: "Maintain a steady pace to meet it on time.", c: "Slow down since you’re ahead of schedule.", d: "Relax—halfway is solid progress." },
+            { q: "A lead seems unlikely but could pay off big. How do you approach it?", a: "Pursue it aggressively—it’s worth the effort.", b: "Reach out cautiously to gauge their interest.", c: "Wait for someone else to test it first.", d: "Pass—it’s not a reliable use of time." },
+            { q: "It’s late, and a deal needs attention. How do you handle it?", a: "Stay up to finalize it—commitment matters.", b: "Work on it briefly but prioritize tomorrow.", c: "Delegate it to a colleague.", d: "Leave it—balance is key." },
+            { q: "A competitor closes a client you’ve been working on. What’s your response?", a: "Analyze their strategy and adapt mine.", b: "Let it go and target a stronger lead.", c: "Review my approach to improve next time.", d: "Accept it as part of the business." },
+            { q: "You haven’t closed a deal in a while. How do you get back on track?", a: "Double my outreach to break the streak.", b: "Stick to my process—it’ll pay off.", c: "Take a short break to refocus.", d: "Wait for the market to shift." },
+            { q: "A client declines after a long pitch. What do you do next?", a: "Follow up later with a refined offer.", b: "Move on quickly to the next opportunity.", c: "Reflect on what I could’ve done better.", d: "Feel frustrated but let it pass." },
+            { q: "I set an ambitious goal for you. How do you take it on?", a: "Embrace the challenge and aim high.", b: "Break it into manageable steps.", c: "Negotiate a more realistic target.", d: "Focus on my own priorities instead." },
+            { q: "You start with no leads. How do you build momentum?", a: "Make dozens of calls to generate interest.", b: "Research online for potential clients.", c: "Ask a teammate for a referral.", d: "Wait for leads to come in naturally." },
+            { q: "It’s a long day. What keeps you motivated?", a: "The satisfaction of exceeding expectations.", b: "Progress toward my goals.", c: "Encouragement from colleagues.", d: "A break to recharge." },
+            { q: "A lender’s slow to process a file. How do you manage it?", a: "Stay in touch to keep it moving.", b: "Expedite it and shift focus.", c: "Assign it to someone else.", d: "Let it resolve on its own." },
+            { q: "You stumble on a call with a key prospect. What’s your next step?", a: "Revise my approach and try again.", b: "Shake it off and call someone else.", c: "Pause to regroup before continuing.", d: "Assume they weren’t interested." },
+            { q: "A client contacts you after hours with an urgent need. How do you respond?", a: "Address it immediately—service comes first.", b: "Reply briefly and handle it tomorrow.", c: "Direct them to a teammate.", d: "Set boundaries and wait ‘til morning." },
+            { q: "You’re aiming for a tough milestone. How much effort do you put in?", a: "Everything I’ve got—results matter.", b: "A strong, sustainable push.", c: "Just enough to stay on track.", d: "The basics—overdoing it isn’t worth it." },
+            { q: "It’s been a slow stretch with no successes. What drives you forward?", a: "Determination to turn it around.", b: "Confidence it’s only temporary.", c: "Support from the team.", d: "Hope for an easier win soon." },
+            { q: "In your view, what’s the core of a mortgage?", a: "A fee-heavy bank product.", b: "A loan secured by property, repaid over time.", c: "A way to access funds with minimal cost.", d: "A financial tool for the wealthy." },
+            { q: "A new team member slows down a shared task. How do you handle it?", a: "Step in to keep it on schedule.", b: "Guide them to improve our outcome.", c: "Let them learn through trial and error.", d: "Report it to ensure accountability." },
+            { q: "You’re waiting on a lender for hours. How do you deal with it?", a: "Remain patient—it’s part of the process.", b: "Work other tasks while following up.", c: "Move on to something else.", d: "Get irritated and vent." },
+            { q: "A client hesitates after several discussions. What’s your approach?", a: "Persist with a tailored follow-up.", b: "Give them space to decide.", c: "Offer an incentive to close the deal.", d: "Shift focus to a more decisive client." },
+            { q: "What sustains you through a demanding day?", a: "Seeing tangible results from my work.", b: "A sense of duty to my clients.", c: "The paycheck that makes it worthwhile.", d: "Pushing through to the end." },
+            { q: "How would you explain an interest rate simply?", a: "The cost of borrowing money.", b: "The lender’s profit margin.", c: "A variable fee set by the bank.", d: "A reward for timely payments." },
+            { q: "You’re close to your daily goal as time runs out. What do you do?", a: "Exceed it with extra effort.", b: "Hit it exactly and wrap up.", c: "Stop short—it’s nearly there.", d: "Save it for the next day." },
+            { q: "A gatekeeper blocks access to a decision-maker. How do you proceed?", a: "Build rapport to gain their trust.", b: "Find an alternative contact method.", c: "Keep calling until they relent.", d: "Accept it and look elsewhere." },
+            { q: "You’re swamped with follow-ups. How do you stay organized?", a: "Power through every one systematically.", b: "Prioritize the most promising leads.", c: "Ask for help from the team.", d: "Let them pile up until it’s urgent." },
+            { q: "What’s a down payment in basic terms?", a: "Initial cash to secure a mortgage.", b: "The bank’s first payment claim.", c: "A fee to reduce monthly costs.", d: "A deposit for future rent." },
+            { q: "You fall just short of a goal. How do you react?", a: "See it as a near-win and move on.", b: "Feel driven to close the gap next time.", c: "Analyze it for improvement.", d: "Shrug—goals shift all the time." },
+            { q: "A client delays their decision for days. What’s your strategy?", a: "Reach out firmly to get clarity.", b: "Check in casually to stay top of mind.", c: "Wait patiently for their response.", d: "Focus on other clients instead." },
+            { q: "You’re new to the team. How do you catch up to veterans?", a: "Work harder to prove my value.", b: "Learn from their experience.", c: "Act confident until I find my footing.", d: "Rely on their support early on." },
+            { q: "A lead says they’re not ready to commit. How do you respond?", a: "Keep engaging—they might shift.", b: "Step back and nurture the relationship.", c: "Present a compelling offer now.", d: "Move to a more active prospect." },
+            { q: "How would you describe closing costs briefly?", a: "Miscellaneous fees to confuse borrowers.", b: "Expenses tied to finalizing a mortgage.", c: "A bonus for lender approval.", d: "A refundable closing deposit." },
+            { q: "You’re exhausted but one task remains. What’s your call?", a: "Finish it—commitment is everything.", b: "Plan to tackle it fresh tomorrow.", c: "Pass it to a colleague.", d: "Skip it for now." },
+            { q: "You face a string of rejections. How do you keep going?", a: "Stay energized—success is close.", b: "Remain consistent despite setbacks.", c: "Feel uncertain but push forward.", d: "Step back until it feels easier." },
+            { q: "An unexpected challenge arises. How do you tackle it?", a: "Take it head-on with confidence.", b: "Approach it methodically.", c: "Avoid it if it’s not critical.", d: "Hope it resolves itself." },
+            { q: "When the pressure’s on, what’s your strength?", a: "Resilience—I don’t back down.", b: "Clarity—I stay focused.", c: "Collaboration—I lean on the team.", d: "Adaptability—I roll with it." },
+            { q: "What role does a credit score play in a mortgage?", a: "It streamlines the application.", b: "It influences rates and eligibility.", c: "It’s a minor factor in approval.", d: "It determines the down payment." },
+            { q: "A deadline looms. How much do you invest?", a: "All my energy—deadlines are non-negotiable.", b: "A balanced effort to meet it.", c: "Enough to get close.", d: "What I can—no burnout." },
+            { q: "A client’s difficult but valuable. How do you manage them?", a: "Stay professional for the payoff.", b: "Set limits while keeping them engaged.", c: "Walk away if it’s too much.", d: "Accommodate them fully to secure the deal." },
+            { q: "You’re the newcomer. How do you establish yourself?", a: "Outperform to earn respect.", b: "Ask questions to grow quickly.", c: "Blend in until I’m comfortable.", d: "Depend on others to guide me." },
+            { q: "A deal’s delayed by paperwork. How do you move it forward?", a: "Drive it through with persistence.", b: "Navigate it carefully and steadily.", c: "Wait for others to handle it.", d: "Drop it if it’s too complex." },
+            { q: "What’s a fixed-rate mortgage in plain language?", a: "A loan with a consistent rate and payment.", b: "Fixed fees with a variable rate.", c: "A mortgage adjusted by credit.", d: "A loan with decreasing payments." },
+            { q: "Work piles up fast. How do you stay on top?", a: "Thrive under pressure—it’s motivating.", b: "Manage it with discipline.", c: "Struggle but keep going.", d: "Pull back until it calms down." },
+            { q: "A competitor’s thriving. How do you react?", a: "Learn from them to sharpen my skills.", b: "Focus on my own strategy.", c: "Adopt their tactics quickly.", d: "Wait for their momentum to fade." },
+            { q: "You’re one step from a big win. How hard do you go?", a: "All out—it’s within reach.", b: "Steady effort to seal it.", c: "Ease up—I’m nearly there.", d: "Let it come naturally." },
+            { q: "Starting here, what’s your energy like?", a: "Eager—I’m ready to make an impact.", b: "Focused—I’ll build my success.", c: "Interested—I’ll see how it goes.", d: "Relaxed—I’ll find my pace." },
+            { q: "What does a loan officer do, in your mind?", a: "Handles paperwork for approvals.", b: "Assists clients with mortgage options.", c: "Finalizes deals for profit.", d: "Adjusts rates for the lender." },
+            { q: "A client questions your experience. How do you reassure them?", a: "Demonstrate my dedication through action.", b: "Highlight my enthusiasm and willingness to learn.", c: "Redirect to the value I offer.", d: "Acknowledge their concern and step back." },
+            { q: "You’re behind schedule. How do you recover?", a: "Accelerate my efforts to catch up.", b: "Plan a smarter approach.", c: "Accept it’s not perfect.", d: "Count on others to help." },
+            { q: "A tough day throws you off. How do you reset?", a: "Dig in deeper for tomorrow.", b: "Assess what went wrong.", c: "Take time to decompress.", d: "Let it weigh on me." },
+            { q: "You’re in over your head. How do you cope?", a: "Embrace it—I’ll figure it out.", b: "Work through it step by step.", c: "Hesitate but try anyway.", d: "Look for an exit." },
+            { q: "What’s your vision here long-term?", a: "Lead—I want to shape this place.", b: "Grow—I’ll build a strong career.", c: "Contribute—I’ll support the team.", d: "Explore—I’ll see where it takes me." }
+        ];
+
+        const scoringGuide = [
+            { a:3, b:4, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 },
+            { a:4, b:2, c:3, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 },
+            { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 },
+            { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:1, b:4, c:2, d:3 },
+            { a:4, b:3, c:2, d:1 }, { a:3, b:4, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 },
+            { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:3, b:4, c:2, d:1 }, { a:4, b:3, c:2, d:1 },
+            { a:4, b:2, c:1, d:3 }, { a:2, b:3, c:4, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 },
+            { a:4, b:3, c:2, d:1 }, { a:2, b:4, c:3, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 },
+            { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:1, b:4, c:2, d:3 }, { a:4, b:3, c:2, d:1 },
+            { a:4, b:2, c:1, d:3 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:2, c:3, d:1 },
+            { a:4, b:3, c:2, d:1 }, { a:4, b:2, c:3, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 },
+            { a:1, b:4, c:2, d:3 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 },
+            { a:4, b:3, c:2, d:1 }, { a:4, b:3, c:2, d:1 }
+        ];
+
+        function loadQuestions() {
+            const questionsDiv = document.getElementById('questions');
+            questions.forEach((q, i) => {
+                const div = document.createElement('div');
+                div.className = 'question';
+                div.innerHTML = `
+                    <p>${i + 1}. ${q.q}</p>
+                    <label><input type="radio" name="q${i}" value="a"> A) ${q.a}</label><br>
+                    <label><input type="radio" name="q${i}" value="b"> B) ${q.b}</label><br>
+                    <label><input type="radio" name="q${i}" value="c"> C) ${q.c}</label><br>
+                    <label><input type="radio" name="q${i}" value="d"> D) ${q.d}</label>
+                `;
+                questionsDiv.appendChild(div);
+            });
+        }
+
+        function submitForm() {
+            let score = 0;
+            questions.forEach((_, i) => {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                if (selected) {
+                    const answer = selected.value;
+                    score += scoringGuide[i][answer];
+                }
+            });
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = "Thank you for completing the assessment! We’ll reach out soon.";
+            resultDiv.style.display = 'block';
+        }
+
+        window.onload = loadQuestions;
+    </script>
+</body>
+</html>
